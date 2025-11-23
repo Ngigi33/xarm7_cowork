@@ -13,14 +13,14 @@ source install/setup.bash
 ros2 run xarm_sequence_runner task_sequencer
 
 # Start the main sequence (call with custom Trigger.srv):
-ros2 service call /start_main_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_task_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
 
 # Start the post-manual (auto) sequence:
 ros2 service call /start_auto_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
 ```
 
 Overview
-- `start_main_sequence` service: starts the main sequence of tasks (runs a list of Python scripts in order). After the main sequence completes, the node automatically starts the post-manual sequence in a background thread and waits for an explicit "auto" trigger if needed.
+- `start_task_sequence` service: starts the main sequence of tasks (runs a list of Python scripts in order). After the main sequence completes, the node automatically starts the post-manual sequence in a background thread and waits for an explicit "auto" trigger if needed.
 - `start_auto_sequence` service: starts the post-manual (auto) sequence directly.
 - Custom service type: `xarm_custom_interfaces/srv/Trigger` is used by both services. It includes a `bool run` request field and returns `bool success` and `string message` in the response.
 
@@ -30,7 +30,7 @@ Files
 
 How it works
 1. The node defines two vectors of shell commands that run Python task scripts under your project venv (via `bash -c "cd ... && source .../xarm_env/bin/activate && python <script>"`).
-2. When the `start_main_sequence` service is called with `run: true`, the node executes each command in `main_sequence_scripts_` sequentially using `system()`.
+2. When the `start_task_sequence` service is called with `run: true`, the node executes each command in `main_sequence_scripts_` sequentially using `system()`.
 3. After the main sequence completes, the node automatically triggers the post-manual sequence in a detached thread (so the main service call can return quickly). The post-manual sequence is a separate list (`post_manual_sequence_scripts_`).
 4. Alternatively, call the `start_auto_sequence` service to run only the post-manual sequence on demand.
 
@@ -48,7 +48,7 @@ Example usage (ROS2)
 - Start the main sequence:
 
 ```
-ros2 service call /start_main_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_task_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
 ```
 
 - Start the post-manual (auto) sequence:

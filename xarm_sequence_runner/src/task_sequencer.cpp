@@ -54,7 +54,7 @@ public:
 
         // --- Create services ---
         main_service_ = this->create_service<Trigger>(
-            "start_main_sequence",
+            "start_task_sequence",
             std::bind(&SequenceRunner::startMainSequence, this,
                       std::placeholders::_1, std::placeholders::_2));
 
@@ -341,7 +341,7 @@ int main(int argc, char **argv)
 //         //
 //         // --- Create services ---
 //         main_service_ = this->create_service<Trigger>(
-//             "start_main_sequence",
+//             "start_task_sequence",
 //             std::bind(&SequenceRunner::startMainSequence, this,
 //                       std::placeholders::_1, std::placeholders::_2));
 
