@@ -13,6 +13,8 @@ commands = [
     # Add more commands if needed
 ]
 
+LOG_CSV_FILE = os.path.join(workspace_folder, "log.csv")
+
 # Store opened processes
 processes = []
 
