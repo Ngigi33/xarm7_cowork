@@ -255,7 +255,7 @@ private:
 
             publish_status(script_name, "Starting", 0.0, task_counter_);
 
-            int ret = system(cmd.c_str());
+            // int ret = system(cmd.c_str());
 
             auto end_time = std::chrono::system_clock::now();
             last_task_end_ = end_time;
