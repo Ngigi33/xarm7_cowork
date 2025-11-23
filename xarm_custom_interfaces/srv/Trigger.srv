@@ -1,0 +1,6 @@
+# Request: set `run` to true to trigger the service action. If omitted
+# (old clients), the service will behave as before and start the action.
+bool run
+---
+bool success   # indicate successful run of triggered service
+string message # informational, e.g. for error message
