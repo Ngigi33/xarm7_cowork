@@ -30,14 +30,15 @@ public:
 
         // --- Define paths for Python tasks + virtual environment ---
         std::string base_path = "/home/vmlabs/xarm7_cowork/dev_ws/src";
-        std::string tasks_path = base_path + "/tasks";
-        std::string venv_activate = "source " + base_path + "/xarm_env/bin/activate";
+        tasks_path_ = base_path + "/tasks";
+        venv_activate_ = "source " + base_path + "/xarm_env/bin/activate";
 
-        auto make_cmd = [&](const std::string &script) {
-            return "bash -c \"cd " + tasks_path +
-                   " && " + venv_activate +
-                   " && python " + script + "\"";
-        };
+        // auto make_cmd = [&](const std::string &script)
+        // {
+        //     return "bash -c \"cd " + tasks_path +
+        //            " && " + venv_activate +
+        //            " && python " + script + "\"";
+        // };
 
         // --- Define main and post-manual sequences ---
         main_sequence_scripts_ = {
@@ -63,6 +64,11 @@ public:
             std::bind(&SequenceRunner::startAutoSequence, this,
                       std::placeholders::_1, std::placeholders::_2));
 
+        open_gripper_service = this->create_service<Trigger>(
+            "start_open_gripper",
+            std::bind(&SequenceRunner::startOpenGripper, this,
+                      std::placeholders::_1, std::placeholders::_2));
+
         RCLCPP_INFO(this->get_logger(), "Sequence Runner Node is ready.");
     }
 
@@ -76,6 +82,17 @@ private:
     rclcpp::Publisher<xarm_custom_interfaces::msg::TaskStatus>::SharedPtr status_pub_;
     rclcpp::Service<Trigger>::SharedPtr main_service_;
     rclcpp::Service<Trigger>::SharedPtr auto_service_;
+    rclcpp::Service<Trigger>::SharedPtr open_gripper_service;
+
+    std::string tasks_path_;
+    std::string venv_activate_;
+
+    std::string make_cmd(const std::string &script)
+    {
+        return "bash -c \"cd " + tasks_path_ +
+               " && " + venv_activate_ +
+               " && python " + script + "\"";
+    }
 
     std::vector<std::string> main_sequence_scripts_;
     std::vector<std::string> post_manual_sequence_scripts_;
@@ -170,7 +187,9 @@ private:
         response->success = true;
         response->message = "Main sequence completed successfully.";
 
-        std::thread([this]() { startPostManualSequence(); }).detach();
+        // std::thread([this]()
+        //             { startPostManualSequence(); })
+        //     .detach();
     }
 
     // -----------------------------------------------------
@@ -234,6 +253,31 @@ private:
         response->message = "Post-manual sequence completed successfully.";
     }
 
+    void startOpenGripper(const std::shared_ptr<Trigger::Request> request,
+                          std::shared_ptr<Trigger::Response> response)
+    {
+        if (!request->run)
+        {
+            response->success = false;
+            response->message = "Request 'run' was false, open gripper not started.";
+            return;
+        }
+
+        std::thread([this]()
+                    {
+            std::string cmd = make_cmd("open_gripper_final_task.py");
+            int ret = system(cmd.c_str());
+
+            if (ret != 0)
+                RCLCPP_ERROR(this->get_logger(), "Failed to run open_gripper_final_task.py");
+            else
+                RCLCPP_INFO(this->get_logger(), "Finished open_gripper_final_task.py"); })
+            .detach();
+
+        response->success = true;
+        response->message = "Open gripper task started.";
+    }
+
     // -----------------------------------------------------
     // INTERNAL AUTO START FOR POST-MANUAL SEQUENCE
     // -----------------------------------------------------
@@ -284,9 +328,6 @@ int main(int argc, char **argv)
     rclcpp::shutdown();
     return 0;
 }
-
-
-
 
 // #include <rclcpp/rclcpp.hpp>
 // #include "xarm_custom_interfaces/srv/trigger.hpp"

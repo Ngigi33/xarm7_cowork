@@ -115,15 +115,13 @@ class RobotMain(object):
             # pinion_gear
             self._tcp_speed = 100
             self._tcp_acc = 1000
-            print("Started")
             code = self._arm.set_position(*[490.9, 63.0, 109.1, -179.6, 1.0, 3.2], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
-            print("In-progress")
             code = self._arm.set_gripper_position(600, wait=True, speed=5000, auto_enable=True)
             if not self._check_code(code, 'set_gripper_position'):
                 return
-            code = self._arm.set_position(*[490.9, 63.0, 12.9, -179.6, 1.0, 3.2], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
+            code = self._arm.set_position(*[490.9, 63.0, 12.9, 178.0, 1.1, 3.2], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
             code = self._arm.set_gripper_position(100, wait=True, speed=5000, auto_enable=True)
@@ -135,7 +133,7 @@ class RobotMain(object):
             code = self._arm.set_position(*[453.9, -404.1, 96.3, 178.1, -1.1, -55.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
-            code = self._arm.set_position(*[452.6, -402.9, 45.0, 178.4, -1.4, -55.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
+            code = self._arm.set_position(*[452.6, -407.6, 45.0, 178.4, -1.4, -55.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
             code = self._arm.set_gripper_position(600, wait=True, speed=5000, auto_enable=True)
@@ -147,7 +145,6 @@ class RobotMain(object):
             code = self._arm.set_position(*[399.0, -5.6, 292.4, -92.0, -87.6, -90.4], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
-            print("Finished")
         except Exception as e:
             self.pprint('MainException: {}'.format(e))
         finally:
