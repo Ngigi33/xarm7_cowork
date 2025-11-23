@@ -19,7 +19,7 @@ ros2 service call /start_task_sequence xarm_custom_interfaces/srv/Trigger "{run:
 ros2 service call /start_auto_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
 
 #Open gripper
-ros2 service call /start_open_gripper std_srvs/srv/Trigger "{run: true}"
+ros2 service call /start_open_gripper xarm_custom_interfaces/srv/Trigger "{run: true}"
 
 ```
 
