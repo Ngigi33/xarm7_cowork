@@ -113,7 +113,7 @@ class RobotMain(object):
     def run(self):
         try:
             # pinion_spindle
-            self._tcp_speed = 150
+            self._tcp_speed = 120
             self._tcp_acc = 1000
             code = self._arm.set_position(*[344.5, 32.5, 90.5, 177.7, -4.0, -1.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
