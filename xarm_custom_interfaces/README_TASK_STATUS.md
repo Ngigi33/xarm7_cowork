@@ -6,7 +6,7 @@ The `/task_status` ROS2 topic is used to publish status updates for tasks execut
 
 Message definition
 
-File: `src/xarm_custom_interfaces/msg/TaskStatus.msg`
+File: `src/xarm_msgs/msg/TaskStatus.msg`
 
 ```
 string task_name      # e.g., pinion_gear_task.py
@@ -61,7 +61,7 @@ This minimal example subscribes to `/task_status` and logs messages.
 # simple_task_status_sub.py
 import rclpy
 from rclpy.node import Node
-from xarm_custom_interfaces.msg import TaskStatus
+from xarm_msgs.msg import TaskStatus
 
 class TaskStatusSubscriber(Node):
     def __init__(self):
@@ -87,9 +87,9 @@ C++ subscriber example snippet
 
 ```cpp
 // Create a subscription in a rclcpp::Node-derived class
-status_sub_ = this->create_subscription<xarm_custom_interfaces::msg::TaskStatus>(
+status_sub_ = this->create_subscription<xarm_msgs::msg::TaskStatus>(
     "task_status", 10,
-    [this](const xarm_custom_interfaces::msg::TaskStatus::SharedPtr msg) {
+    [this](const xarm_msgs::msg::TaskStatus::SharedPtr msg) {
         RCLCPP_INFO(this->get_logger(), "Task %s state=%s progress=%.1f id=%d",
                     msg->task_name.c_str(), msg->state.c_str(), msg->progress, msg->task_id);
     });
@@ -105,12 +105,12 @@ Best practices
 Troubleshooting
 
 - `ros2 topic echo /task_status` shows nothing:
-  - Ensure the `xarm_custom_interfaces` package is built and sourced (`colcon build` + `source install/setup.bash`).
+  - Ensure the `xarm_msgs` package is built and sourced (`colcon build` + `source install/setup.bash`).
   - Confirm the publisher node is running (e.g., `ros2 node list`).
   - Use `ros2 topic list` to verify topic name.
 
 - Message type not found:
-  - Make sure the `TaskStatus.msg` is declared in `xarm_custom_interfaces` package and that package built successfully.
+  - Make sure the `TaskStatus.msg` is declared in `xarm_msgs` package and that package built successfully.
   - Re-source your workspace (`source install/setup.bash`) after building.
 
 - Messages show odd timestamps or zero progress: check that the publisher sets timestamp and progress intentionally; the example publisher sets simple simulated progress.

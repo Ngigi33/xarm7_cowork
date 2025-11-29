@@ -8,7 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(xarm_custom_interfaces REQUIRED)
+find_package(xarm_msgs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -24,11 +24,11 @@ endif()
 
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(xarm_custom_interfaces REQUIRED)
+find_package(xarm_msgs REQUIRED)
 
 
 add_executable(task_sequencer src/task_sequencer.cpp)
-ament_target_dependencies(task_sequencer rclcpp std_msgs xarm_custom_interfaces)
+ament_target_dependencies(task_sequencer rclcpp std_msgs xarm_msgs)
 
 install(TARGETS
   task_sequencer

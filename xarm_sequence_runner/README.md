@@ -13,24 +13,24 @@ source install/setup.bash
 ros2 run xarm_sequence_runner task_sequencer
 
 # Start the main sequence (call with custom Trigger.srv):
-ros2 service call /start_task_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_task_sequence xarm_msgs/srv/Trigger "{run: true}"
 
 # Start the post-manual (auto) sequence:
-ros2 service call /start_auto_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_auto_sequence xarm_msgs/srv/Trigger "{run: true}"
 
 #Open gripper
-ros2 service call /start_open_gripper xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_open_gripper xarm_msgs/srv/Trigger "{run: true}"
 
 ```
 
 Overview
 - `start_task_sequence` service: starts the main sequence of tasks (runs a list of Python scripts in order). After the main sequence completes, the node automatically starts the post-manual sequence in a background thread and waits for an explicit "auto" trigger if needed.
 - `start_auto_sequence` service: starts the post-manual (auto) sequence directly.
-- Custom service type: `xarm_custom_interfaces/srv/Trigger` is used by both services. It includes a `bool run` request field and returns `bool success` and `string message` in the response.
+- Custom service type: `xarm_msgs/srv/Trigger` is used by both services. It includes a `bool run` request field and returns `bool success` and `string message` in the response.
 
 Files
 - `src/task_sequencer.cpp` — the C++ node implementing the two services and the script lists. Update the vectors in this file to change which Python scripts are executed and their order.
-- `../xarm_custom_interfaces/srv/Trigger.srv` — custom service definition (bool run --- bool success, string message).
+- `../xarm_msgs/srv/Trigger.srv` — custom service definition (bool run --- bool success, string message).
 
 How it works
 1. The node defines two vectors of shell commands that run Python task scripts under your project venv (via `bash -c "cd ... && source .../xarm_env/bin/activate && python <script>"`).
@@ -52,13 +52,13 @@ Example usage (ROS2)
 - Start the main sequence:
 
 ```
-ros2 service call /start_task_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_task_sequence xarm_msgs/srv/Trigger "{run: true}"
 ```
 
 - Start the post-manual (auto) sequence:
 
 ```
-ros2 service call /start_auto_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_auto_sequence xarm_msgs/srv/Trigger "{run: true}"
 ```
 
 Notes & tips

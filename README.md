@@ -7,7 +7,7 @@ Quick overview
 - `dev_ws/src/xarm_sequence_runner/src/task_sequencer.cpp` — C++ node exposing ROS2 services to start the main and post-manual sequences.
 - `dev_ws/src/run_xarm7.py` — helper that opens GNOME Terminal tabs and runs configured commands; press `q` in the launcher terminal to stop and close tabs.
 - `dev_ws/src/tasks/` — directory with task scripts (Python files) that perform robot operations (examples live in the repo's `tasks` folder).
-- `dev_ws/src/xarm_custom_interfaces/` — custom ROS2 interfaces (includes `Trigger.srv` and `TaskStatus.msg`).
+- `dev_ws/src/xarm_msgs/` — custom ROS2 interfaces (includes `Trigger.srv` and `TaskStatus.msg`).
 
 Quick setup (local developer machine)
 1. Create and activate a Python virtualenv (optional but recommended):
@@ -49,13 +49,13 @@ ros2 run xarm_sequence_runner task_sequencer
 
 ```bash
 # start main sequence
-ros2 service call /start_main_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_main_sequence xarm_msgs/srv/Trigger "{run: true}"
 # start post-manual (auto) sequence
-ros2 service call /start_auto_sequence xarm_custom_interfaces/srv/Trigger "{run: true}"
+ros2 service call /start_auto_sequence xarm_msgs/srv/Trigger "{run: true}"
 ```
 
 Topic and messages
-- `/task_status` publishes `xarm_custom_interfaces/msg/TaskStatus` messages from the C++ sequencer. Use `ros2 topic echo /task_status` to monitor task names, states and progress.
+- `/task_status` publishes `xarm_msgs/msg/TaskStatus` messages from the C++ sequencer. Use `ros2 topic echo /task_status` to monitor task names, states and progress.
 
 Configuration notes
 - Edit `dev_ws/src/run_task_sequencer.py` to configure `DEFAULT_SEQUENCE` and `DEFAULT_POST_MANUAL_SEQUENCE` (ordered lists of task filenames).
@@ -66,7 +66,7 @@ Troubleshooting
 - If a service or message type is missing: re-build the workspace and source it:
 
 ```bash
-colcon build --packages-select xarm_custom_interfaces xarm_sequence_runner
+colcon build --packages-select xarm_msgs xarm_sequence_runner
 source install/setup.bash
 ```
 
@@ -74,7 +74,7 @@ source install/setup.bash
 
 Where to get help or extend
 - The Python sequencer supports interactive `Start`/`auto` flow and an optional ROS2 Trigger-based interface. See `run_task_sequencer.py` for usage and CLI flags.
-- The C++ node publishes `TaskStatus` messages to `/task_status`; see `xarm_custom_interfaces/msg/TaskStatus.msg` for the schema and `xarm_custom_interfaces/README_TASK_STATUS.md` for usage examples.
+- The C++ node publishes `TaskStatus` messages to `/task_status`; see `xarm_msgs/msg/TaskStatus.msg` for the schema and `xarm_msgs/README_TASK_STATUS.md` for usage examples.
 
 
 # xarm7_cowork

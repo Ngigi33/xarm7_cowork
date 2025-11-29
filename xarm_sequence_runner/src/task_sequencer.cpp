@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
-#include "xarm_custom_interfaces/srv/trigger.hpp"
-#include "xarm_custom_interfaces/msg/task_status.hpp"
+#include "xarm_msgs/srv/trigger.hpp"
+#include "xarm_msgs/msg/task_status.hpp"
 #include <cstdlib>
 #include <vector>
 #include <string>
@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <ctime>
 
-using Trigger = xarm_custom_interfaces::srv::Trigger;
+using Trigger = xarm_msgs::srv::Trigger;
 
 class SequenceRunner : public rclcpp::Node
 {
@@ -18,7 +18,7 @@ public:
     SequenceRunner() : Node("sequence_runner")
     {
         // --- Publisher for task status ---
-        status_pub_ = this->create_publisher<xarm_custom_interfaces::msg::TaskStatus>("task_status", 10);
+        status_pub_ = this->create_publisher<xarm_msgs::msg::TaskStatus>("task_status", 10);
 
         // --- CSV file setup (append mode) ---
         csv_file_.open("/home/vmlabs/xarm7_cowork/dev_ws/task_log.csv", std::ios::out | std::ios::app);
@@ -79,7 +79,7 @@ public:
     }
 
 private:
-    rclcpp::Publisher<xarm_custom_interfaces::msg::TaskStatus>::SharedPtr status_pub_;
+    rclcpp::Publisher<xarm_msgs::msg::TaskStatus>::SharedPtr status_pub_;
     rclcpp::Service<Trigger>::SharedPtr main_service_;
     rclcpp::Service<Trigger>::SharedPtr auto_service_;
     rclcpp::Service<Trigger>::SharedPtr open_gripper_service;
@@ -104,7 +104,7 @@ private:
     // --- Helper: publish task status ---
     void publish_status(const std::string &task, const std::string &state, float progress = 0.0, int task_id = 0)
     {
-        xarm_custom_interfaces::msg::TaskStatus msg;
+        xarm_msgs::msg::TaskStatus msg;
         msg.task_name = task;
         msg.state = state;       // "Starting", "In-progress", "Finished", "Error"
         msg.progress = progress; // 0.0-100.0
@@ -330,8 +330,8 @@ int main(int argc, char **argv)
 }
 
 // #include <rclcpp/rclcpp.hpp>
-// #include "xarm_custom_interfaces/srv/trigger.hpp"
-// #include "xarm_custom_interfaces/msg/task_status.hpp"
+// #include "xarm_msgs/srv/trigger.hpp"
+// #include "xarm_msgs/msg/task_status.hpp"
 // #include "std_msgs/msg/string.hpp"
 // #include <cstdlib>
 // #include <vector>
@@ -339,7 +339,7 @@ int main(int argc, char **argv)
 // #include <thread>
 // #include <chrono>
 
-// using Trigger = xarm_custom_interfaces::srv::Trigger;
+// using Trigger = xarm_msgs::srv::Trigger;
 
 // class SequenceRunner : public rclcpp::Node
 // {
@@ -348,7 +348,7 @@ int main(int argc, char **argv)
 //     {
 //         //
 //         // --- Setup publisher ---
-//         status_pub_ = this->create_publisher<xarm_custom_interfaces::msg::TaskStatus>("task_status", 10);
+//         status_pub_ = this->create_publisher<xarm_msgs::msg::TaskStatus>("task_status", 10);
 
 //         //
 //         // --- Define paths for your Python tasks + venv activation ---
@@ -395,7 +395,7 @@ int main(int argc, char **argv)
 //     }
 
 // private:
-//     rclcpp::Publisher<xarm_custom_interfaces::msg::TaskStatus>::SharedPtr status_pub_;
+//     rclcpp::Publisher<xarm_msgs::msg::TaskStatus>::SharedPtr status_pub_;
 
 //     rclcpp::Service<Trigger>::SharedPtr main_service_;
 //     rclcpp::Service<Trigger>::SharedPtr auto_service_;
@@ -408,7 +408,7 @@ int main(int argc, char **argv)
 //     // --- Helper to publish status ---
 //     void publish_status(const std::string &task, const std::string &state, float progress = 0.0, int task_id = 0)
 //     {
-//         xarm_custom_interfaces::msg::TaskStatus msg;
+//         xarm_msgs::msg::TaskStatus msg;
 //         msg.task_name = task;
 //         msg.state = state;       // "Starting", "In-progress", "Finished", "Error"
 //         msg.progress = progress; // 0.0-100.0
