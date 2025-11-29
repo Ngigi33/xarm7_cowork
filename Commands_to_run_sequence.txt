@@ -7,6 +7,11 @@ ros2 service call /start_auto_sequence xarm_msgs/srv/Trigger "{run: true}"
 #Open gripper
 ros2 service call /start_open_gripper xarm_msgs/srv/Trigger "{run: true}"
 
+#Go_home 
+ros2 service call /go_home xarm_msgs/srv/Trigger "{run: true}"
+
+#Stop
+ros2 service call /stop_motion xarm_msgs/srv/Trigger "{run: true}"
 
 Task_status :
 

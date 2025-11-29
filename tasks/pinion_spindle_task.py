@@ -115,9 +115,13 @@ class RobotMain(object):
             # pinion_spindle
             self._tcp_speed = 120
             self._tcp_acc = 1000
+            
+            print(self._arm.angles)
+            print(self._arm.get_gripper_position()[1]) 
             code = self._arm.set_position(*[344.5, 32.5, 90.5, 177.7, -4.0, -1.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
+            print(self._arm.angles)
             code = self._arm.set_gripper_position(600, wait=True, speed=5000, auto_enable=True)
             if not self._check_code(code, 'set_gripper_position'):
                 return
@@ -125,6 +129,7 @@ class RobotMain(object):
             if not self._check_code(code, 'set_position'):
                 return
             code = self._arm.set_gripper_position(100, wait=True, speed=5000, auto_enable=True)
+            print(self._arm.get_gripper_position()) 
             if not self._check_code(code, 'set_gripper_position'):
                 return
             code = self._arm.set_position(*[344.5, 32.5, 140.0, 177.7, -4.0, -1.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
@@ -142,9 +147,9 @@ class RobotMain(object):
             code = self._arm.set_position(*[461.3, -405.9, 138.7, 178.1, -1.4, -55.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
-            code = self._arm.set_position(*[399.0, -5.6, 292.4, -92.0, -87.6, -90.4], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
-            if not self._check_code(code, 'set_position'):
-                return
+            # code = self._arm.set_position(*[399.0, -5.6, 292.4, -92.0, -87.6, -90.4], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
+            # if not self._check_code(code, 'set_position'):
+            #     return
         except Exception as e:
             self.pprint('MainException: {}'.format(e))
         finally:

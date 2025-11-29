@@ -1,0 +1,17 @@
+pinion_gear =
+pick  : 490.9, 63.0, 12.9
+place : 461.3, -404.7, 45.0,
+
+pinion_spindle = 
+pick : 335.6, 32.8, 25.1
+place : 461.3, -405.9, 49.2
+
+spur_spindle = 
+pick : 331.8, -81.9, 58.4
+place : 367.1, -371.6, 101.7
+
+adhesive_applier / returner=
+pick : 407.7, 94.4, 42.1, 177.7
+
+cover_plate
+pick : 501.7, -85.4, 15.5

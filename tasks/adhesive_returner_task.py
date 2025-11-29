@@ -115,11 +115,11 @@ class RobotMain(object):
             # adhesive_returner
             self._tcp_speed = 100
             self._tcp_acc = 1000
-            print("Started")
+        
             code = self._arm.set_position(*[407.7, 94.4, 140.2, 177.7, -0.9, -5.1], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
-            print("In-progress")
+
             code = self._arm.set_position(*[407.7, 94.4, 42.1, 177.7, -0.9, -5.1], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
@@ -129,10 +129,10 @@ class RobotMain(object):
             code = self._arm.set_position(*[407.7, 94.4, 140.2, 177.7, -0.9, -5.1], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
-            code = self._arm.set_position(*[399.0, -5.6, 292.4, -92.0, -87.6, -90.4], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
-            if not self._check_code(code, 'set_position'):
-                return
-            print("Finished")
+            # code = self._arm.set_position(*[399.0, -5.6, 292.4, -92.0, -87.6, -90.4], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
+            # if not self._check_code(code, 'set_position'):
+            #     return
+
         except Exception as e:
             self.pprint('MainException: {}'.format(e))
         finally:

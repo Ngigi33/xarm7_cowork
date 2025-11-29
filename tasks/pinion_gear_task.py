@@ -142,9 +142,9 @@ class RobotMain(object):
             code = self._arm.set_position(*[453.9, -404.1, 96.3, 178.1, -1.1, -55.5], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
-            code = self._arm.set_position(*[399.0, -5.6, 292.4, -92.0, -87.6, -90.4], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
-            if not self._check_code(code, 'set_position'):
-                return
+            # code = self._arm.set_position(*[399.0, -5.6, 292.4, -92.0, -87.6, -90.4], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
+            # if not self._check_code(code, 'set_position'):
+            #     return
         except Exception as e:
             self.pprint('MainException: {}'.format(e))
         finally:

@@ -33,14 +33,6 @@ public:
         tasks_path_ = base_path + "/tasks";
         venv_activate_ = "source " + base_path + "/xarm_env/bin/activate";
 
-        // auto make_cmd = [&](const std::string &script)
-        // {
-        //     return "bash -c \"cd " + tasks_path +
-        //            " && " + venv_activate +
-        //            " && python " + script + "\"";
-        // };
-
-        // --- Define main and post-manual sequences ---
         main_sequence_scripts_ = {
             make_cmd("pinion_gear_task.py"),
             make_cmd("pinion_spindle_task.py"),
@@ -69,6 +61,16 @@ public:
             std::bind(&SequenceRunner::startOpenGripper, this,
                       std::placeholders::_1, std::placeholders::_2));
 
+        go_home_service = this->create_service<Trigger>(
+            "go_home",
+            std::bind(&SequenceRunner::go_home, this,
+                      std::placeholders::_1, std::placeholders::_2));
+
+        stop_service = this->create_service<Trigger>(
+            "stop_motion",
+            std::bind(&SequenceRunner::stop_motion, this,
+                      std::placeholders::_1, std::placeholders::_2));
+
         RCLCPP_INFO(this->get_logger(), "Sequence Runner Node is ready.");
     }
 
@@ -83,6 +85,8 @@ private:
     rclcpp::Service<Trigger>::SharedPtr main_service_;
     rclcpp::Service<Trigger>::SharedPtr auto_service_;
     rclcpp::Service<Trigger>::SharedPtr open_gripper_service;
+    rclcpp::Service<Trigger>::SharedPtr go_home_service;
+    rclcpp::Service<Trigger>::SharedPtr stop_service;
 
     std::string tasks_path_;
     std::string venv_activate_;
@@ -276,6 +280,58 @@ private:
 
         response->success = true;
         response->message = "Open gripper task started.";
+    }
+
+    void go_home(const std::shared_ptr<Trigger::Request> request,
+                 std::shared_ptr<Trigger::Response> response)
+    {
+        if (!request->run)
+        {
+            response->success = false;
+            response->message = "Request 'run' was false, open gripper not started.";
+            return;
+        }
+
+        std::thread([this]()
+                    {
+            std::string cmd = make_cmd("go_home.py");
+            int ret = system(cmd.c_str());
+
+            if (ret != 0)
+                RCLCPP_ERROR(this->get_logger(), "Failed to run open_gripper_final_task.py");
+            else
+                RCLCPP_INFO(this->get_logger(), "Finished open_gripper_final_task.py"); })
+            .detach();
+
+        response->success = true;
+        response->message = "Open gripper task started.";
+    }
+
+    void stop_motion(const std::shared_ptr<Trigger::Request> request,
+                     std::shared_ptr<Trigger::Response> response)
+    {
+        if (!request->run)
+        {
+            response->success = false;
+            response->message = "Request 'run' was false, open gripper not started.";
+            return;
+        }
+
+        std::thread([this]()
+                    {
+            std::string cmd = make_cmd("stop_motion.py");
+            int ret = system(cmd.c_str());
+
+            if (ret != 0)
+                RCLCPP_ERROR(this->get_logger(), "Failed to run open_gripper_final_task.py");
+            else
+                RCLCPP_INFO(this->get_logger(), "Finished open_gripper_final_task.py"); })
+            .detach();
+
+        response->success = true;
+        response->message = "Open gripper task started.";
+
+        stop_motion
     }
 
     // -----------------------------------------------------

@@ -123,7 +123,7 @@ class RobotMain(object):
             code = self._arm.set_gripper_position(600, wait=True, speed=5000, auto_enable=True)
             if not self._check_code(code, 'set_gripper_position'):
                 return
-            code = self._arm.set_position(*[501.7, -85.4, 17.0, 178.7, -0.6, 0.2], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
+            code = self._arm.set_position(*[501.7, -85.4, 15.5, 178.7, -0.6, 0.2], speed=self._tcp_speed, mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'):
                 return
             code = self._arm.set_gripper_position(100, wait=True, speed=5000, auto_enable=True)
