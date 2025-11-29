@@ -331,7 +331,7 @@ private:
         response->success = true;
         response->message = "Open gripper task started.";
 
-        stop_motion
+        
     }
 
     // -----------------------------------------------------

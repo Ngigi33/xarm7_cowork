@@ -97,7 +97,7 @@ class JointInfoPublisher(Node):
         # joint_info_msg.names = [f'joint_{i+1}' for i in range(self._arm.num_joints)]
         joint_info_msg.names = []
         joint_info_msg.positions = [angle for angle in self._arm.angles]
-        # joint_info_msg.positions = joint_info_msg.positions.append((float)(self._arm.get_gripper_position()[1]))
+        joint_info_msg.positions.append((float)(self._arm.get_gripper_position()[1]))
         # print(type(self._arm.get_gripper_position()[1]))
         # print(type(joint_info_msg.po)
         joint_info_msg.velocities = []
