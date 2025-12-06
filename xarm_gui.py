@@ -17,6 +17,7 @@ import subprocess
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext
+import tkinter.font as tkfont
 import pty
 import select
 import errno
@@ -29,6 +30,19 @@ class TerminalGUI:
 	def __init__(self, master: tk.Tk):
 		self.master = master
 		master.title("Xarm UI")
+		# Default window size and allow resizing
+		master.geometry("1100x700")
+		master.minsize(800, 600)
+		master.resizable(True, True)
+
+		# font used by terminal and inputs (adjustable)
+		self.ui_font = tkfont.Font(family="Courier", size=11)
+		# Bind shortcuts to adjust font size
+		master.bind('<Control-plus>', lambda e: self.change_font(1))
+		master.bind('<Control-equal>', lambda e: self.change_font(1))
+		master.bind('<Control-minus>', lambda e: self.change_font(-1))
+		master.bind('<Control-underscore>', lambda e: self.change_font(-1))
+
 
 		# Top frame: script selection and controls
 		top = tk.Frame(master)
@@ -176,7 +190,13 @@ class TerminalGUI:
 		text = self.input_var.get()
 		if text is None:
 			return
-		# send text plus newline
+		# special toggle: open manual control when user types 'n'
+		if text.strip().lower() == 'n':
+			# toggle manual controls (don't forward the 'n' to the process)
+			self.toggle_manual_controls()
+			self.input_var.set("")
+			
+		# send text plus newline to running process
 		data = text + "\n"
 		if self.master_fd is None:
 			self.append_text("(no process)\n")
@@ -186,6 +206,78 @@ class TerminalGUI:
 		except OSError as e:
 			self.append_text(f"(write error: {e})\n")
 		self.input_var.set("")
+
+	def toggle_manual_controls(self) -> None:
+		"""Show or hide the manual control panel."""
+		if getattr(self, 'manual_frame', None):
+			# already visible -> hide
+			self.hide_manual_controls()
+		else:
+			self.create_manual_controls()
+
+	def create_manual_controls(self) -> None:
+		"""Create the manual control panel with five service-call buttons."""
+		self.master.title("Xarm UI - Manual control activated")
+		self.manual_frame = tk.Frame(self.master, bd=2, relief=tk.SUNKEN)
+		self.manual_frame.pack(fill=tk.X, padx=6, pady=(0,6))
+		label = tk.Label(self.manual_frame, text="Manual control activated", font=(None, 10, 'bold'))
+		label.pack(anchor=tk.W, padx=6, pady=(4,2))
+
+		# Define commands
+		base = "cd /home/vmlabs/xarm7_cowork/dev_ws ; source install/setup.bash ; "
+		buttons = [
+			("Start Task Sequence", base + "ros2 service call /start_task_sequence xarm_msgs/srv/Trigger \"{run: true}\""),
+			("Start Auto Sequence", base + "ros2 service call /start_auto_sequence xarm_msgs/srv/Trigger \"{run: true}\""),
+			("Open Gripper", base + "ros2 service call /start_open_gripper xarm_msgs/srv/Trigger \"{run: true}\""),
+			("Go Home", base + "ros2 service call /go_home xarm_msgs/srv/Trigger \"{run: true}\""),
+			("Stop Motion", base + "ros2 topic pub /stop_motion xarm_msgs/msg/StopMsg \"{stop_flag: true}\" --once && ros2 topic pub /stop_motion xarm_msgs/msg/StopMsg \"{stop_flag: true}\" --once"),
+			("Reset", base + "ros2 service call /reset xarm_msgs/srv/Trigger \"{run: true} \""),
+			("relauncher ", base + "ros2 run xarm_sequence_runner process_launcher")
+		]
+
+		btn_frame = tk.Frame(self.manual_frame)
+		btn_frame.pack(fill=tk.X, padx=6, pady=(0,6))
+		for (label_text, cmd) in buttons:
+			b = tk.Button(btn_frame, text=label_text, width=20, command=lambda c=cmd, l=label_text: self._run_ros_command(c, l))
+			b.pack(side=tk.LEFT, padx=4, pady=4)
+
+		# Add a close button
+		close = tk.Button(self.manual_frame, text="Hide Manual", command=self.hide_manual_controls)
+		close.pack(anchor=tk.E, padx=6, pady=(0,6))
+
+	def hide_manual_controls(self) -> None:
+		if getattr(self, 'manual_frame', None):
+			self.manual_frame.destroy()
+			self.manual_frame = None
+			self.master.title("Xarm UI")
+
+	def _run_ros_command(self, cmd: str, label: str) -> None:
+		"""Start a background thread to run the provided shell command and stream output."""
+		self.append_text(f"--- Running: {label} ---\n")
+		thr = threading.Thread(target=self._ros_command_thread, args=(cmd, label), daemon=True)
+		thr.start()
+
+	def change_font(self, delta: int) -> None:
+		"""Increase or decrease UI font size by delta."""
+		size = int(self.ui_font.cget('size')) + delta
+		if size < 6:
+			size = 6
+		self.ui_font.configure(size=size)
+
+	def _ros_command_thread(self, cmd: str, label: str) -> None:
+		# Use bash -lc so `source` works and the chained commands run
+		proc = subprocess.Popen(["/bin/bash", "-lc", cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		if not proc.stdout:
+			self.master.after(0, self.append_text, f"(no output from command)\n")
+			return
+		for line in proc.stdout:
+			try:
+				text = line.decode(errors='replace')
+			except Exception:
+				text = repr(line)
+			self.master.after(0, self.append_text, text)
+		proc.wait()
+		self.master.after(0, self.append_text, f"--- {label} finished with code {proc.returncode} ---\n")
 
 	def on_enter(self, event=None) -> str:
 		self.send_input()

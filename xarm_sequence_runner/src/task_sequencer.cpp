@@ -66,10 +66,12 @@ public:
             std::bind(&SequenceRunner::go_home, this,
                       std::placeholders::_1, std::placeholders::_2));
 
-        stop_service = this->create_service<Trigger>(
-            "stop_motion",
-            std::bind(&SequenceRunner::stop_motion, this,
-                      std::placeholders::_1, std::placeholders::_2));
+
+
+        // stop_service = this->create_service<Trigger>(
+        //     "stop_motion",
+        //     std::bind(&SequenceRunner::stop_motion, this,
+        //               std::placeholders::_1, std::placeholders::_2));
 
         RCLCPP_INFO(this->get_logger(), "Sequence Runner Node is ready.");
     }
@@ -86,7 +88,8 @@ private:
     rclcpp::Service<Trigger>::SharedPtr auto_service_;
     rclcpp::Service<Trigger>::SharedPtr open_gripper_service;
     rclcpp::Service<Trigger>::SharedPtr go_home_service;
-    rclcpp::Service<Trigger>::SharedPtr stop_service;
+  
+    // rclcpp::Service<Trigger>::SharedPtr stop_service;
 
     std::string tasks_path_;
     std::string venv_activate_;
@@ -298,41 +301,41 @@ private:
             int ret = system(cmd.c_str());
 
             if (ret != 0)
-                RCLCPP_ERROR(this->get_logger(), "Failed to run open_gripper_final_task.py");
+                RCLCPP_ERROR(this->get_logger(), "Failed to run go_home.py");
             else
-                RCLCPP_INFO(this->get_logger(), "Finished open_gripper_final_task.py"); })
+                RCLCPP_INFO(this->get_logger(), "Finished go_home.py"); })
             .detach();
 
         response->success = true;
-        response->message = "Open gripper task started.";
+        response->message = "Go home task started.";
     }
 
-    void stop_motion(const std::shared_ptr<Trigger::Request> request,
-                     std::shared_ptr<Trigger::Response> response)
-    {
-        if (!request->run)
-        {
-            response->success = false;
-            response->message = "Request 'run' was false, open gripper not started.";
-            return;
-        }
 
-        std::thread([this]()
-                    {
-            std::string cmd = make_cmd("stop_motion.py");
-            int ret = system(cmd.c_str());
+    // void stop_motion(const std::shared_ptr<Trigger::Request> request,
+    //                  std::shared_ptr<Trigger::Response> response)
+    // {
+    //     if (!request->run)
+    //     {
+    //         response->success = false;
+    //         response->message = "Request 'run' was false, open gripper not started.";
+    //         return;
+    //     }
 
-            if (ret != 0)
-                RCLCPP_ERROR(this->get_logger(), "Failed to run open_gripper_final_task.py");
-            else
-                RCLCPP_INFO(this->get_logger(), "Finished open_gripper_final_task.py"); })
-            .detach();
+    //     std::thread([this]()
+    //                 {
+    //         std::string cmd = make_cmd("stop_motion.py");
+    //         int ret = system(cmd.c_str());
 
-        response->success = true;
-        response->message = "Open gripper task started.";
+    //         if (ret != 0)
+    //             RCLCPP_ERROR(this->get_logger(), "Failed to run open_gripper_final_task.py");
+    //         else
+    //             RCLCPP_INFO(this->get_logger(), "Finished open_gripper_final_task.py"); })
+    //         .detach();
 
-        
-    }
+    //     response->success = true;
+    //     response->message = "Open gripper task started.";
+
+    // }
 
     // -----------------------------------------------------
     // INTERNAL AUTO START FOR POST-MANUAL SEQUENCE
@@ -380,7 +383,12 @@ int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<SequenceRunner>();
-    rclcpp::spin(node);
+
+    rclcpp::executors::MultiThreadedExecutor executor;
+    executor.add_node(node);
+    executor.spin();
+
+    // rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
 }

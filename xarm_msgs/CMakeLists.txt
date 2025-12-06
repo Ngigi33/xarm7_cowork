@@ -33,6 +33,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/Trigger.srv"
   "msg/TaskStatus.msg"
   "msg/JointNamesAndAngles.msg"
+  "msg/StopMsg.msg"
   DEPENDENCIES std_msgs builtin_interfaces
 )
 

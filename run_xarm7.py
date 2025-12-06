@@ -12,6 +12,8 @@ workspace_folder = "/home/vmlabs/xarm7_cowork/dev_ws"
 commands = [
     f"cd {workspace_folder}; source install/setup.bash; ros2 run xarm_sequence_runner task_sequencer",
     f"cd {workspace_folder}; source install/setup.bash; ros2 run xarm_py_nodes joint_info_publisher",
+    f"cd {workspace_folder}; source install/setup.bash; ros2 run xarm_sequence_runner emergency_stop_subscriber",
+    # f"cd {workspace_folder}; source install/setup.bash; ros2 run xarm_sequence_runner process_launcher",
     # Add more commands if needed
 ]
 

@@ -28,10 +28,16 @@ find_package(xarm_msgs REQUIRED)
 
 
 add_executable(task_sequencer src/task_sequencer.cpp)
+add_executable(emergency_stop_subscriber src/emergency_stop_subscriber.cpp)
+add_executable(process_launcher src/process_launcher.cpp)
 ament_target_dependencies(task_sequencer rclcpp std_msgs xarm_msgs)
+ament_target_dependencies(emergency_stop_subscriber rclcpp std_msgs xarm_msgs)
+ament_target_dependencies(process_launcher rclcpp xarm_msgs)
 
 install(TARGETS
   task_sequencer
+  emergency_stop_subscriber
+  process_launcher
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

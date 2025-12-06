@@ -11,7 +11,10 @@ ros2 service call /start_open_gripper xarm_msgs/srv/Trigger "{run: true}"
 ros2 service call /go_home xarm_msgs/srv/Trigger "{run: true}"
 
 #Stop
-ros2 service call /stop_motion xarm_msgs/srv/Trigger "{run: true}"
+ros2 topic pub /stop_motion xarm_msgs/msg/StopMsg "{stop_flag: true}"
+
+#reset after clicking stop
+ros2 service call /reset xarm_msgs/srv/Trigger "{run: true}"
 
 Task_status :
 

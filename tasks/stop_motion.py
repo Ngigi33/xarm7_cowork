@@ -6,9 +6,31 @@ import datetime
 import random
 import traceback
 import threading
+import subprocess
+import os
+import signal
 from xarm import version
 from xarm.wrapper import XArmAPI
 
+workspace_folder = "/home/vmlabs/xarm7_cowork/dev_ws"
+commands = [
+    f"cd {workspace_folder}; source install/setup.bash; ros2 run xarm_sequence_runner task_sequencer",
+]
+
+
+def kill_processes_by_name(process_name):
+    """
+    Kills all processes matching the given command name.
+    """
+    ps_command = f"ps aux | grep '{process_name}' | grep -v grep"
+    try:
+        output = subprocess.check_output(ps_command, shell=True, text=True)
+        pids = [int(line.split()[1]) for line in output.splitlines()]
+        for pid in pids:
+            print(f"Killing PID {pid} -> {process_name}")
+            os.kill(pid, signal.SIGKILL)
+    except subprocess.CalledProcessError:
+        pass
 
 class RobotMain(object):
     """Robot Main Class"""
@@ -29,8 +51,8 @@ class RobotMain(object):
         self._arm.clean_warn()
         self._arm.clean_error()
         self._arm.motion_enable(True)
-        self._arm.set_mode(0)
-        self._arm.set_state(6)
+        self._arm.set_mode(2)
+        self._arm.set_state(4)
         time.sleep(1)
         self._arm.register_error_warn_changed_callback(self._error_warn_changed_callback)
         self._arm.register_state_changed_callback(self._state_changed_callback)
@@ -91,12 +113,20 @@ class RobotMain(object):
             return self._arm.state < 4
         else:
             return False
-        
+
+
     def run(self):
         try:
+            self._arm.set_mode(2)
+            print("Stop Motion Sequence")
+            self._arm.set_state(4)
+            for cmd in commands:
+                kill_processes_by_name(cmd.split(";")[-1].strip())
             print("Finished")
         except Exception as e:
             self.pprint("Error during run:", e)
+
+
 
 if __name__ == '__main__':
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
