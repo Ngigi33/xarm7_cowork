@@ -50,17 +50,29 @@ def kill_processes_by_name(process_name):
     except subprocess.CalledProcessError:
         pass
 
+# def get_char():
+#     """Get a single character from stdin without Enter"""
+#     fd = sys.stdin.fileno()
+#     old_settings = termios.tcgetattr(fd)
+#     try:
+#         tty.setraw(fd)
+#         ch = sys.stdin.read(1)
+#     finally:
+#         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+#     return ch
 def get_char():
-    """Get a single character from stdin without Enter"""
+    if not sys.stdin.isatty():
+        # Fallback when run from GUI or pipe
+        return input("\nEnter command (q to quit): ").strip()[0]
+
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
         tty.setraw(fd)
-        ch = sys.stdin.read(1)
+        char = sys.stdin.read(1)
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return ch
-
+    return char
 
 
 def get_ip_address_simple():
